@@ -136,6 +136,39 @@ def final_hypothesis():
         }
     }), 201
 
+# --- New Endpoints for Architecture Separation (Phase 3 + Mentor Feedback) ---
+
+@app.route('/api/mock/hypothesis/chat', methods=['POST'])
+def chat_endpoint():
+    """
+    Dedicated endpoint for the 'Chat' service variable.
+    Currently re-uses the final hypothesis generation logic or simple retrieval.
+    """
+    logger.info(f"---> POST /chat | Payload: {request.json}")
+    # For now, this behaves like the 'retrieval' or 'summary' endpoint
+    # We can just return the same structure as 'final_hypothesis' or a simplified one.
+    # In the real system, this might be a totally different service.
+    
+    # Simple Mock Response
+    return jsonify({
+        "summary": "This is a response from the dedicated CHAT endpoint.",
+        "hypothesis_id": request.json.get("hypothesis_id", "unknown"),
+        "resource": {
+             "id": request.json.get("hypothesis_id", "unknown"),
+             "type": "hypothesis"
+        }
+    }), 200
+
+@app.route('/api/mock/hypothesis/main/hypothesis', methods=['POST', 'GET'])
+def main_endpoint_wrapper():
+    """
+    Wrapper to handle requests going to HYPOTHESIS_MAIN_ENDPOINT/hypothesis
+    """
+    if request.method == 'GET':
+        return check_status()
+    elif request.method == 'POST':
+        return final_hypothesis()
+
 if __name__ == "__main__":
     print("Starting Mock Hypothesis Server on port 9001...")
     app.run(host='0.0.0.0', port=9001, debug=True)
